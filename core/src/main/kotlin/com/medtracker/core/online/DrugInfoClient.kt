@@ -82,9 +82,23 @@ class DrugInfoClient(
         val result = fetch("https://api.fda.gov/drug/label.json?search=$search&limit=5")
         if (result.code == 404) return null
         if (result.code != 200) throw LookupException("openFDA returned HTTP ${result.code}")
-        val results = parse(result.body).obj()?.get("results").arr() ?: return null
-        val best = results.mapNotNull { it.obj() }.minByOrNull { score(it, term) } ?: return null
-        return labelToInfo(best)
+        val labels = parse(result.body).obj()?.get("results").arr()?.mapNotNull { it.obj() } ?: return null
+        val best = labels.minByOrNull { score(it, term) } ?: return null
+        val info = labelToInfo(best)
+        if (info.pharmClasses.isNotEmpty()) return info
+        // Many labels (e.g. from repackagers) omit the drug class; borrow it from another label
+        // for the same generic medicine.
+        val sameGeneric = labels.filter { genericNames(it) == genericNames(best) }
+        val classes = sameGeneric.flatMap(::pharmClasses).distinct()
+        return info.copy(pharmClasses = classes)
+    }
+
+    private fun genericNames(label: JsonObject): Set<String> =
+        label["openfda"].obj()?.get("generic_name").strings().map(KnowledgeBase::normalize).toSet()
+
+    private fun pharmClasses(label: JsonObject): List<String> {
+        val openfda = label["openfda"].obj()
+        return (openfda?.get("pharm_class_epc").strings() + openfda?.get("pharm_class_moa").strings()).distinct()
     }
 
     private fun score(label: JsonObject, term: String): Int {
@@ -98,6 +112,7 @@ class DrugInfoClient(
             else -> 20 + (generics.firstOrNull()?.split(' ')?.size ?: 10)
         }
         if (label["drug_interactions"] == null) score += 5
+        if (pharmClasses(label).isEmpty()) score += 3
         return score
     }
 
@@ -113,7 +128,7 @@ class DrugInfoClient(
             fetchedAtMillis = clock(),
             genericName = generic,
             brandNames = openfda?.get("brand_name").strings().map { it.trim() }.distinctBy { it.lowercase() }.take(6),
-            pharmClasses = (openfda?.get("pharm_class_epc").strings() + openfda?.get("pharm_class_moa").strings()).distinct(),
+            pharmClasses = pharmClasses(label),
             interactionsText = section("drug_interactions"),
             contraindicationsText = section("contraindications"),
             warningsText = section("boxed_warning", "warnings_and_cautions", "warnings"),

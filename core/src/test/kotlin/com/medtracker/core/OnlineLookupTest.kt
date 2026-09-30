@@ -172,6 +172,20 @@ class OnlineLookupTest {
     }
 
     @Test
+    fun clientBorrowsDrugClassFromAnotherLabelForSameGeneric() {
+        val labels = """
+            {"results":[
+              {"set_id":"repack","drug_interactions":["Benzodiazepines: profound sedation."],"openfda":{"generic_name":["TAPENTADOL"]}},
+              {"set_id":"orig","openfda":{"generic_name":["TAPENTADOL"],"pharm_class_epc":["Opioid Agonist [EPC]"]}}
+            ]}
+        """.trimIndent()
+        val client = DrugInfoClient(http = { url -> if ("api.fda.gov" in url) HttpResult(200, labels) else HttpResult(404, "{}") })
+        val info = client.lookup("Tapentadol")
+        assertEquals("repack", info.labelSetId)
+        assertEquals(listOf("Opioid Agonist [EPC]"), info.pharmClasses)
+    }
+
+    @Test
     fun clientRejectsUnrelatedRxNormSuggestions() {
         val client = DrugInfoClient(http = { url ->
             if ("approximateTerm" in url) HttpResult(200, """{"approximateGroup":{"candidate":[{"rxcui":"1","name":"tonic water"}]}}""")
