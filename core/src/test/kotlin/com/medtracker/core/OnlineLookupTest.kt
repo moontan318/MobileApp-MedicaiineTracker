@@ -186,6 +186,22 @@ class OnlineLookupTest {
     }
 
     @Test
+    fun clientFallsBackToRxClassWhenLabelsHaveNoClass() {
+        val client = DrugInfoClient(http = { url ->
+            when {
+                "api.fda.gov" in url -> HttpResult(200, """{"results":[{"set_id":"s","openfda":{"generic_name":["TAPENTADOL"]}}]}""")
+                "rxclass" in url && "has_EPC" in url -> HttpResult(200,
+                    """{"rxclassDrugInfoList":{"rxclassDrugInfo":[{"rxclassMinConceptItem":{"classId":"N1","className":"Opioid Agonist","classType":"EPC"}}]}}""")
+                else -> HttpResult(200, "{}")
+            }
+        })
+        val info = client.lookup("Tapentadol")
+        assertEquals(listOf("Opioid Agonist [EPC]"), info.pharmClasses)
+        assertTrue(DrugInfoClient.RXCLASS_SOURCE in info.sources)
+        assertTrue("opioid" in PharmClassMapper.tagsFor(info.pharmClasses))
+    }
+
+    @Test
     fun clientRejectsUnrelatedRxNormSuggestions() {
         val client = DrugInfoClient(http = { url ->
             if ("approximateTerm" in url) HttpResult(200, """{"approximateGroup":{"candidate":[{"rxcui":"1","name":"tonic water"}]}}""")
@@ -214,6 +230,7 @@ class OnlineLookupTest {
         println("paracetamol -> ${paracetamol.genericName}")
 
         val tapentadol = client.lookup("Tapentadol")
+        println("tapentadol: generic=${tapentadol.genericName} classes=${tapentadol.pharmClasses} sources=${tapentadol.sources}")
         assertTrue(PharmClassMapper.tagsFor(tapentadol.pharmClasses).contains("opioid"), tapentadol.pharmClasses.toString())
         println("tapentadol -> ${tapentadol.pharmClasses}")
     }

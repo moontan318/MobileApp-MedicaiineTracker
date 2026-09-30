@@ -58,20 +58,48 @@ class DrugInfoClient(
         if (candidates.isEmpty()) return OnlineDrugInfo.notFound(key, clock())
 
         for (candidate in candidates) {
-            searchLabel(candidate)?.let { return it.copy(query = key, sources = listOf(OPENFDA_SOURCE)) }
+            searchLabel(candidate)?.let { return withClasses(it.copy(query = key, sources = listOf(OPENFDA_SOURCE))) }
         }
 
         val ingredient = candidates.firstNotNullOfOrNull { rxNormIngredient(it) }
             ?: return OnlineDrugInfo.notFound(key, clock())
         val usName = PharmClassMapper.UK_TO_US[ingredient] ?: ingredient
-        searchLabel(usName)?.let { return it.copy(query = key, sources = listOf(RXNORM_SOURCE, OPENFDA_SOURCE)) }
-        return OnlineDrugInfo(
-            query = key,
-            found = true,
-            fetchedAtMillis = clock(),
-            genericName = ingredient,
-            sources = listOf(RXNORM_SOURCE),
+        searchLabel(usName)?.let { return withClasses(it.copy(query = key, sources = listOf(RXNORM_SOURCE, OPENFDA_SOURCE))) }
+        return withClasses(
+            OnlineDrugInfo(
+                query = key,
+                found = true,
+                fetchedAtMillis = clock(),
+                genericName = ingredient,
+                sources = listOf(RXNORM_SOURCE),
+            )
         )
+    }
+
+    /** Fills in the drug class from RxClass when the label didn't provide one. */
+    private fun withClasses(info: OnlineDrugInfo): OnlineDrugInfo {
+        if (info.pharmClasses.isNotEmpty()) return info
+        val generic = info.genericName ?: return info
+        val withoutSalt = KnowledgeBase.tokenize(generic).filterNot { it in SALT_WORDS }.joinToString(" ")
+        val classes = listOf(generic, withoutSalt).distinct().filter { it.isNotBlank() }
+            .firstNotNullOfOrNull { name -> runCatching { rxClasses(name) }.getOrNull()?.takeIf { it.isNotEmpty() } }
+            .orEmpty()
+        if (classes.isEmpty()) return info
+        return info.copy(pharmClasses = classes, sources = (info.sources + RXCLASS_SOURCE).distinct())
+    }
+
+    // ---------------------------------------------------------------- RxClass
+
+    /** FDA established pharmacologic classes (EPC) and mechanisms (MoA) for an ingredient, via RxClass. */
+    private fun rxClasses(ingredient: String): List<String> {
+        val encoded = URLEncoder.encode(ingredient, "UTF-8")
+        return listOf("has_EPC" to "EPC", "has_MoA" to "MoA").flatMap { (rela, suffix) ->
+            val r = fetch("$RXNAV/rxclass/class/byDrugName.json?drugName=$encoded&relaSource=DAILYMED&relas=$rela")
+            if (r.code != 200) return@flatMap emptyList()
+            parse(r.body).obj()?.get("rxclassDrugInfoList").obj()?.get("rxclassDrugInfo").arr().orEmpty()
+                .mapNotNull { it.obj()?.get("rxclassMinConceptItem").obj()?.get("className").str() }
+                .map { "$it [$suffix]" }
+        }.distinct()
     }
 
     // ---------------------------------------------------------------- openFDA
@@ -195,7 +223,13 @@ class DrugInfoClient(
         private val LABEL_FIELDS = listOf("openfda.generic_name", "openfda.brand_name", "openfda.substance_name")
         const val OPENFDA_SOURCE = "openFDA drug label (US FDA)"
         const val RXNORM_SOURCE = "RxNorm (US National Library of Medicine)"
+        const val RXCLASS_SOURCE = "RxClass (US National Library of Medicine)"
         private const val MAX_SECTION_CHARS = 8000
+        private val SALT_WORDS = setOf(
+            "hydrochloride", "hcl", "sodium", "potassium", "calcium", "magnesium", "sulfate", "sulphate", "maleate",
+            "mesylate", "besylate", "tartrate", "succinate", "citrate", "phosphate", "bromide", "acetate", "fumarate",
+            "hydrobromide", "monohydrate", "dihydrate", "anhydrous",
+        )
 
         private fun truncate(text: String): String =
             if (text.length <= MAX_SECTION_CHARS) text else text.take(MAX_SECTION_CHARS).trimEnd() + "…"
