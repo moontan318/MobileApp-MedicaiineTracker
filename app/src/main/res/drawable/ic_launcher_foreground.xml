@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A capsule with a check mark, sized for the 108dp adaptive icon safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:rotation="-45">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M42,34 L54,34 L54,74 L42,74 A12,12 0 0,1 30,62 L30,46 A12,12 0 0,1 42,34 Z"
+            android:strokeWidth="0" />
+        <path
+            android:fillColor="#A8E6CF"
+            android:pathData="M54,34 L66,34 A12,12 0 0,1 78,46 L78,62 A12,12 0 0,1 66,74 L54,74 Z" />
+    </group>
+</vector>
