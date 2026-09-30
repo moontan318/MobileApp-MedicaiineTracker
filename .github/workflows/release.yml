@@ -1,0 +1,48 @@
+name: Release APK
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Run interaction engine tests
+        run: ./gradlew :core:test
+
+      - name: Build APK
+        run: ./gradlew :app:assembleDebug
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk "MedicineTracker-${GITHUB_REF_NAME}.apk"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Medicine Tracker ${{ github.ref_name }}
+          files: MedicineTracker-${{ github.ref_name }}.apk
+          body: |
+            Android APK for Medicine Tracker (Android 8.0+).
+
+            **Install:** download `MedicineTracker-${{ github.ref_name }}.apk` on your phone, open it, and allow
+            "Install unknown apps" for your browser or file manager when prompted.
+
+            This build is signed with a development key, so it is for sideloading rather than the Play Store.
+            If you install a later version signed with a different key you may need to uninstall this one first.
+
+            This app is an information aid, not medical advice. Always check with a doctor or pharmacist
+            before changing or stopping a medicine.
