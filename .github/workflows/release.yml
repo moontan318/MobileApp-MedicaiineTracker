@@ -4,6 +4,10 @@ on:
   push:
     tags:
       - "v*"
+    branches:
+      - main
+      - claude/vibrant-hopper-qwzlch
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -27,18 +31,31 @@ jobs:
       - name: Build APK
         run: ./gradlew :app:assembleDebug
 
+      - name: Work out version tag
+        id: version
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            tag="${GITHUB_REF_NAME}"
+          else
+            tag="v$(sed -n 's/.*versionName = "\(.*\)".*/\1/p' app/build.gradle.kts)"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
       - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk "MedicineTracker-${GITHUB_REF_NAME}.apk"
+        run: cp app/build/outputs/apk/debug/app-debug.apk "MedicineTracker-${{ steps.version.outputs.tag }}.apk"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          name: Medicine Tracker ${{ github.ref_name }}
-          files: MedicineTracker-${{ github.ref_name }}.apk
+          tag_name: ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: Medicine Tracker ${{ steps.version.outputs.tag }}
+          files: MedicineTracker-${{ steps.version.outputs.tag }}.apk
+          overwrite_files: true
           body: |
             Android APK for Medicine Tracker (Android 8.0+).
 
-            **Install:** download `MedicineTracker-${{ github.ref_name }}.apk` on your phone, open it, and allow
+            **Install:** download `MedicineTracker-${{ steps.version.outputs.tag }}.apk` on your phone, open it, and allow
             "Install unknown apps" for your browser or file manager when prompted.
 
             This build is signed with a development key, so it is for sideloading rather than the Play Store.
