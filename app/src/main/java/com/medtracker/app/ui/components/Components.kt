@@ -27,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -114,10 +115,52 @@ fun DisclaimerDialog(onAccept: () -> Unit) {
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text("Never stop or change a prescribed medicine without speaking to your doctor or pharmacist. In an emergency, call your local emergency number.")
-                Text("All data stays on this device.")
+                Text("Your list stays on this device. To identify medicines, only their names are looked up online (US FDA and National Library of Medicine) - you can switch this off in Settings.")
             }
         },
         confirmButton = { TextButton(onClick = onAccept) { Text("I understand") } },
+    )
+}
+
+@Composable
+fun SettingsDialog(
+    onlineEnabled: Boolean,
+    onOnlineEnabledChange: (Boolean) -> Unit,
+    onClearCache: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Settings & data sources") },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Look up medicines online", fontWeight = FontWeight.SemiBold)
+                        Text(
+                            "Identifies items not in the built-in database and checks official drug labels for interactions.",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                    Switch(checked = onlineEnabled, onCheckedChange = onOnlineEnabledChange)
+                }
+                Text(
+                    "Only the medicine name is sent, to the US FDA (openFDA drug labels) and the US National Library of Medicine (RxNorm). " +
+                        "Doses, times and notes never leave your device. Results are saved on the device for 30 days.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                Text("Data sources", fontWeight = FontWeight.SemiBold)
+                Text(
+                    "• Built-in database: ~220 common UK medicines and supplements with interaction, timing and dose rules.\n" +
+                        "• openFDA: official US prescribing information (drug class, interactions, contraindications, dosing).\n" +
+                        "• RxNorm: corrects misspellings and brand names.\n" +
+                        "• BNF and NHS: linked from each item - the BNF has no public data feed.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                TextButton(onClick = onClearCache) { Text("Clear saved online results") }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } },
     )
 }
 

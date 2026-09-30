@@ -21,6 +21,12 @@ jobs:
       - name: Run interaction engine tests
         run: ./gradlew :core:test
 
+      - name: Check live online lookups (openFDA / RxNorm)
+        continue-on-error: true
+        env:
+          ONLINE_TESTS: "1"
+        run: ./gradlew :core:test --tests '*OnlineLookupTest.liveLookupWhenEnabled' --rerun-tasks
+
       - name: Build debug APK
         run: ./gradlew :app:assembleDebug
 

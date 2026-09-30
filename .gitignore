@@ -11,3 +11,6 @@ build/
 *.apk
 *.aab
 *.keystore
+
+# Shared development signing key so sideloaded updates install over earlier versions
+!app/debug.keystore

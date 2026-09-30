@@ -59,12 +59,15 @@ class KnowledgeBase(
         fun tokenize(text: String): List<String> =
             normalize(text).split(' ').filter { it.isNotEmpty() }
 
-        private fun containsSequence(haystack: List<String>, needle: List<String>): Boolean {
-            if (needle.size > haystack.size) return false
-            for (start in 0..haystack.size - needle.size) {
-                if (needle.indices.all { haystack[start + it] == needle[it] }) return true
+        fun containsSequence(haystack: List<String>, needle: List<String>): Boolean = indexOfSequence(haystack, needle) >= 0
+
+        /** Index of the first occurrence of [needle] as consecutive words in [haystack], or -1. */
+        fun indexOfSequence(haystack: List<String>, needle: List<String>, from: Int = 0): Int {
+            if (needle.isEmpty() || needle.size > haystack.size) return -1
+            for (start in from..haystack.size - needle.size) {
+                if (needle.indices.all { haystack[start + it] == needle[it] }) return start
             }
-            return false
+            return -1
         }
     }
 }

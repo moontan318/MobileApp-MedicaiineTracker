@@ -58,8 +58,9 @@ jobs:
             **Install:** download `MedicineTracker-${{ steps.version.outputs.tag }}.apk` on your phone, open it, and allow
             "Install unknown apps" for your browser or file manager when prompted.
 
-            This build is signed with a development key, so it is for sideloading rather than the Play Store.
-            If you install a later version signed with a different key you may need to uninstall this one first.
+            This build is signed with the project's development key, so it is for sideloading rather than the Play Store.
+            From v1.1.0 onwards new versions install over the old one and keep your list. (If you have v1.0.0
+            installed, uninstall it once before installing a newer version.)
 
             This app is an information aid, not medical advice. Always check with a doctor or pharmacist
             before changing or stopping a medicine.

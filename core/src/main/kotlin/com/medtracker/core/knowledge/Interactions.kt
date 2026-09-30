@@ -70,16 +70,16 @@ internal val INTERACTIONS: List<InteractionRule> = listOf(
         advice = "Tell your anticoagulation clinic; extra INR checks may be needed when starting or stopping.",
     ),
     InteractionRule(
-        id = "warfarin_misc", sideA = set("vka"), sideB = set("cranberry", "glucosamine"), severity = MODERATE,
+        id = "warfarin_misc", sideA = set("vka"), sideB = set("cranberry", "glucosamine", "chondroitin", "cbd"), severity = MODERATE,
         title = "May increase warfarin's effect",
-        effect = "Cranberry and glucosamine have been reported to raise INR in some people taking warfarin.",
+        effect = "Cranberry, glucosamine, chondroitin and CBD have been reported to raise INR in some people taking warfarin.",
         advice = "Avoid large amounts, or arrange extra INR monitoring.",
     ),
     InteractionRule(
         id = "sjw_anticoag", sideA = set("enzyme_inducer"), sideB = set("anticoagulant"), severity = MAJOR,
-        title = "St John's wort weakens anticoagulants",
-        effect = "St John's wort speeds up breakdown of warfarin and the newer anticoagulants, increasing the risk of clots and stroke.",
-        advice = "Do not combine. Speak to your prescriber before stopping St John's wort, as levels can then rise.",
+        title = "Anticoagulant may stop working",
+        effect = "St John's wort, carbamazepine and phenytoin speed up breakdown of warfarin and the newer anticoagulants, increasing the risk of clots and stroke.",
+        advice = "Avoid the combination unless your prescriber is managing it. Don't stop the other product suddenly without advice, as anticoagulant levels can then rise.",
     ),
 
     // ---------- Serotonin syndrome ----------
@@ -102,13 +102,13 @@ internal val INTERACTIONS: List<InteractionRule> = listOf(
     InteractionRule(
         id = "sjw_contraceptive", sideA = set("enzyme_inducer"), sideB = set("hormonal_contraceptive"), severity = MAJOR,
         title = "Contraception may fail",
-        effect = "St John's wort reduces hormone levels from contraceptive pills, implants and patches.",
-        advice = "Use additional non-hormonal contraception, or stop St John's wort (continue precautions for 28 days after stopping).",
+        effect = "St John's wort, carbamazepine and phenytoin reduce hormone levels from contraceptive pills, implants and patches.",
+        advice = "Use additional non-hormonal contraception and ask about alternatives (continue precautions for 28 days after stopping the other product).",
     ),
     InteractionRule(
         id = "sjw_critical", sideA = set("enzyme_inducer"), sideB = set("digoxin", "immunosuppressant"), severity = MAJOR,
-        title = "St John's wort lowers medicine levels",
-        effect = "St John's wort can lower blood levels of this medicine enough to make it ineffective.",
+        title = "Medicine levels may fall too low",
+        effect = "St John's wort, carbamazepine and phenytoin can lower blood levels of this medicine enough to make it ineffective.",
         advice = "Avoid the combination and speak to your prescriber.",
     ),
 
@@ -316,6 +316,181 @@ internal val INTERACTIONS: List<InteractionRule> = listOf(
         advice = "Check with your pharmacist - you probably only need one.",
     ),
 
+    // ---------- Gout ----------
+    InteractionRule(
+        id = "xo_thiopurine", sideA = set("xanthine_oxidase_inhibitor"), sideB = set("thiopurine"), severity = MAJOR,
+        title = "Severe bone-marrow toxicity",
+        effect = "Allopurinol and febuxostat block the breakdown of azathioprine and mercaptopurine, which can build up to dangerous levels.",
+        advice = "Only combine under specialist supervision with a greatly reduced azathioprine/mercaptopurine dose (febuxostat should not be combined). Contact your prescriber.",
+    ),
+    InteractionRule(
+        id = "allopurinol_amoxicillin", sideA = set("allopurinol"), sideB = set("amoxicillin"), severity = MINOR,
+        title = "Increased risk of skin rash",
+        effect = "Rashes are more common when amoxicillin or ampicillin is taken with allopurinol.",
+        advice = "Report any rash to your doctor or pharmacist.",
+    ),
+    InteractionRule(
+        id = "allopurinol_acei", sideA = set("allopurinol"), sideB = set("acei"), severity = MINOR,
+        title = "Possible allergic or blood reactions",
+        effect = "Allopurinol with ACE inhibitors has been linked to hypersensitivity reactions and low white cell counts, especially with kidney problems.",
+        advice = "Usually fine together - report fever, rash or sore throat promptly.",
+    ),
+    InteractionRule(
+        id = "allopurinol_warfarin", sideA = set("allopurinol"), sideB = set("vka"), severity = MINOR,
+        title = "May increase warfarin's effect",
+        effect = "Allopurinol occasionally increases the effect of warfarin.",
+        advice = "Have your INR checked when starting or changing the allopurinol dose.",
+    ),
+    InteractionRule(
+        id = "allopurinol_theophylline", sideA = set("allopurinol"), sideB = set("theophylline"), severity = MINOR,
+        title = "Theophylline levels may rise",
+        effect = "High-dose allopurinol can increase theophylline levels.",
+        advice = "Your prescriber may check theophylline levels.",
+    ),
+    InteractionRule(
+        id = "colchicine_3a4", sideA = set("colchicine"), sideB = set("cyp3a4_inhibitor"), severity = MAJOR,
+        title = "Colchicine toxicity",
+        effect = "This medicine blocks colchicine breakdown; colchicine can build up and cause severe diarrhoea, muscle damage and blood disorders.",
+        advice = "Avoid, or only combine with a reduced colchicine dose agreed with your prescriber.",
+    ),
+    InteractionRule(
+        id = "colchicine_grapefruit", sideA = set("colchicine"), sideB = set("grapefruit"), severity = MODERATE,
+        title = "Grapefruit raises colchicine levels",
+        effect = "Grapefruit juice can increase the amount of colchicine in the blood.",
+        advice = "Avoid large amounts of grapefruit or grapefruit juice.",
+    ),
+    InteractionRule(
+        id = "colchicine_statin", sideA = set("colchicine"), sideB = set("statin"), severity = MODERATE,
+        title = "Increased risk of muscle damage",
+        effect = "Colchicine and statins can both cause muscle problems.",
+        advice = "Report unexplained muscle pain, tenderness or weakness.",
+    ),
+
+    // ---------- Enzyme (CYP3A4) inhibitors ----------
+    InteractionRule(
+        id = "statin_3a4", sideA = set("statin_3a4"), sideB = set("cyp3a4_inhibitor"), severity = MAJOR,
+        title = "Risk of serious muscle damage",
+        effect = "This medicine raises levels of simvastatin/atorvastatin, increasing the risk of rhabdomyolysis (muscle breakdown).",
+        advice = "With clarithromycin/erythromycin the statin is usually paused for the course. With amiodarone, verapamil or diltiazem the statin dose is usually capped - check with your prescriber.",
+    ),
+    InteractionRule(
+        id = "statin_grapefruit", sideA = set("statin_3a4"), sideB = set("grapefruit"), severity = MODERATE,
+        title = "Grapefruit raises statin levels",
+        effect = "Grapefruit juice increases simvastatin (and to a lesser extent atorvastatin) levels.",
+        advice = "Avoid grapefruit juice with simvastatin; keep to small amounts with atorvastatin.",
+    ),
+    InteractionRule(
+        id = "amiodarone_warfarin", sideA = set("amiodarone"), sideB = set("vka"), severity = MAJOR,
+        title = "Greatly increased warfarin effect",
+        effect = "Amiodarone markedly increases warfarin levels for weeks to months.",
+        advice = "Warfarin dose usually needs reducing, with frequent INR checks.",
+    ),
+    InteractionRule(
+        id = "amiodarone_digoxin", sideA = set("amiodarone"), sideB = set("digoxin"), severity = MAJOR,
+        title = "Digoxin toxicity",
+        effect = "Amiodarone roughly doubles digoxin levels.",
+        advice = "Digoxin dose is usually halved - check with your prescriber.",
+    ),
+    InteractionRule(
+        id = "verapamil_bb", sideA = set("verapamil"), sideB = set("beta_blocker"), severity = MAJOR,
+        title = "Dangerously slow heart rate",
+        effect = "Verapamil with a beta-blocker can cause severe slowing of the heart, heart block and low blood pressure.",
+        advice = "Should only be combined under specialist supervision.",
+        topic = "bradycardia",
+    ),
+    InteractionRule(
+        id = "diltiazem_bb", sideA = set("diltiazem"), sideB = set("beta_blocker"), severity = MODERATE,
+        title = "Slow heart rate",
+        effect = "Diltiazem with a beta-blocker can slow the heart and lower blood pressure.",
+        advice = "Often used together with monitoring - report dizziness, fainting or breathlessness.",
+        topic = "bradycardia",
+    ),
+    InteractionRule(
+        id = "azole_warfarin", sideA = set("fluconazole", "metronidazole"), sideB = set("vka"), severity = MAJOR,
+        title = "Greatly increased warfarin effect",
+        effect = "Fluconazole and metronidazole block warfarin breakdown, raising INR and bleeding risk.",
+        advice = "Tell your anticoagulation clinic before starting - an INR check within a few days is usually needed.",
+    ),
+    InteractionRule(
+        id = "antibiotic_warfarin", sideA = set("macrolide", "quinolone"), sideB = set("vka"), severity = MODERATE,
+        title = "May increase warfarin's effect",
+        effect = "Some antibiotics can raise INR.",
+        advice = "Tell your anticoagulation clinic about the antibiotic course; an extra INR check may be needed.",
+    ),
+    InteractionRule(
+        id = "theophylline_inhibitors", sideA = set("theophylline"), sideB = set("ciprofloxacin", "erythromycin", "clarithromycin"), severity = MODERATE,
+        title = "Theophylline levels may rise",
+        effect = "This antibiotic reduces theophylline clearance, risking nausea, palpitations and seizures.",
+        advice = "Your prescriber may reduce the theophylline dose or check levels.",
+    ),
+
+    // ---------- Trimethoprim ----------
+    InteractionRule(
+        id = "trimethoprim_mtx", sideA = set("trimethoprim"), sideB = set("methotrexate"), severity = MAJOR,
+        title = "Methotrexate toxicity",
+        effect = "Trimethoprim and methotrexate both affect folate and together can cause serious bone-marrow suppression.",
+        advice = "Avoid - ask for an alternative antibiotic.",
+    ),
+
+    // ---------- Epilepsy & mood ----------
+    InteractionRule(
+        id = "valproate_lamotrigine", sideA = set("valproate"), sideB = set("lamotrigine"), severity = MODERATE,
+        title = "Lamotrigine levels double",
+        effect = "Valproate slows lamotrigine breakdown, increasing the risk of serious rash.",
+        advice = "Lamotrigine must be started at a lower dose and increased slowly - follow your specialist's plan.",
+    ),
+    InteractionRule(
+        id = "lamotrigine_contraceptive", sideA = set("lamotrigine"), sideB = set("hormonal_contraceptive"), severity = MODERATE,
+        title = "Contraceptive pill lowers lamotrigine",
+        effect = "Oestrogen-containing contraceptives can halve lamotrigine levels, which may cause seizures.",
+        advice = "Tell your epilepsy team - lamotrigine dose may need adjusting.",
+    ),
+    InteractionRule(
+        id = "inducer_hrt", sideA = set("enzyme_inducer"), sideB = set("hormone_therapy"), severity = MODERATE,
+        title = "HRT may be less effective",
+        effect = "St John's wort, carbamazepine and phenytoin can reduce hormone levels from HRT.",
+        advice = "Tell your prescriber if symptoms return or you have unexpected bleeding.",
+    ),
+    InteractionRule(
+        id = "opioid_gabapentinoid", sideA = set("opioid"), sideB = set("gabapentinoid"), severity = MAJOR,
+        title = "Risk of dangerously slowed breathing",
+        effect = "Gabapentin or pregabalin with an opioid increases the risk of severe drowsiness and breathing problems.",
+        advice = "Use the lowest effective doses. Avoid alcohol and seek help for extreme drowsiness or slow breathing.",
+        topic = "sedation",
+    ),
+    InteractionRule(
+        id = "tamoxifen_cyp2d6", sideA = set("tamoxifen"), sideB = set("cyp2d6_strong"), severity = MAJOR,
+        title = "Tamoxifen may be less effective",
+        effect = "Fluoxetine and paroxetine block the enzyme that activates tamoxifen.",
+        advice = "Ask your oncology team about a different antidepressant (e.g. sertraline or venlafaxine).",
+    ),
+
+    // ---------- Anticholinergic & dopamine ----------
+    InteractionRule(
+        id = "anticholinergic_burden", sideA = set("anticholinergic"), sideB = set("anticholinergic"), severity = MODERATE,
+        title = "High anticholinergic burden",
+        effect = "Several anticholinergic medicines together increase the risk of confusion, falls, constipation, dry mouth and urinary retention - especially in older people.",
+        advice = "Ask your pharmacist whether one of these can be switched or stopped.",
+    ),
+    InteractionRule(
+        id = "anticholinergic_dementia", sideA = set("anticholinergic"), sideB = set("cholinesterase_inhibitor"), severity = MODERATE,
+        title = "Medicines with opposing effects",
+        effect = "Anticholinergic medicines can cancel out the benefit of dementia medicines such as donepezil.",
+        advice = "Ask your prescriber whether the anticholinergic medicine is still needed.",
+    ),
+    InteractionRule(
+        id = "levodopa_antidopamine", sideA = set("levodopa"), sideB = set("metoclopramide", "antipsychotic"), severity = MAJOR,
+        title = "Can worsen Parkinson's symptoms",
+        effect = "This medicine blocks dopamine and opposes levodopa.",
+        advice = "Avoid metoclopramide in Parkinson's (domperidone is usually preferred). Discuss antipsychotic choice with the specialist.",
+    ),
+    InteractionRule(
+        id = "qt_qt", sideA = set("qt"), sideB = set("qt"), severity = MODERATE,
+        title = "Risk of abnormal heart rhythm",
+        effect = "Both medicines can prolong the QT interval on an ECG; together they increase the risk of a dangerous heart rhythm.",
+        advice = "Check with your prescriber - an ECG may be advised. Report palpitations or fainting.",
+    ),
+
     // ---------- Beneficial combinations ----------
     InteractionRule(
         id = "iron_vitc", sideA = set("iron"), sideB = set("vitamin_c"), severity = INFO,
@@ -385,6 +560,13 @@ internal val INTERACTIONS: List<InteractionRule> = listOf(
         title = "Antibiotic can kill probiotic bacteria",
         effect = "Probiotics taken at the same time as antibiotics are less effective.",
         advice = "Take the probiotic at least 2 hours after the antibiotic.",
+        separationHours = 2.0,
+    ),
+    InteractionRule(
+        id = "sep_fexofenadine_antacid", sideA = set("fexofenadine"), sideB = set("antacid"), severity = MINOR,
+        title = "Antacid reduces fexofenadine absorption",
+        effect = "Aluminium/magnesium antacids reduce how much fexofenadine is absorbed.",
+        advice = "Take them at least 2 hours apart.",
         separationHours = 2.0,
     ),
     InteractionRule(

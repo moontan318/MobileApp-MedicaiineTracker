@@ -136,7 +136,7 @@ fun EditItemScreen(
                             nameError -> Text("Enter a name")
                             name.isBlank() -> Text("e.g. Levothyroxine, Vitamin D3, Magnesium glycinate")
                             recognised.isNotEmpty() -> Text("Recognised: " + recognised.joinToString(", ") { it.displayName })
-                            else -> Text("Not in the built-in database - it will be saved but can't be checked")
+                            else -> Text("Not in the built-in database - it will be looked up online after saving")
                         }
                     },
                     singleLine = true,

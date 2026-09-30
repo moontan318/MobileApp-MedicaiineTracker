@@ -32,7 +32,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.IconButton
+import com.medtracker.app.data.LookupStatus
 import com.medtracker.app.ui.components.EmptyState
+import com.medtracker.core.knowledge.KnowledgeBase
 import com.medtracker.app.ui.components.SeverityBadge
 import com.medtracker.app.ui.components.severityIcon
 import com.medtracker.app.ui.theme.severityColors
@@ -47,12 +51,21 @@ import com.medtracker.core.model.RegimenItem
 fun ItemsScreen(
     items: List<RegimenItem>,
     analysis: AnalysisResult,
+    lookupStatus: Map<String, LookupStatus>,
     onAdd: () -> Unit,
-    onEdit: (String) -> Unit,
+    onOpen: (String) -> Unit,
     onOpenReview: () -> Unit,
+    onOpenSettings: () -> Unit,
 ) {
     Scaffold(
-        topBar = { TopAppBar(title = { Text("My medicines & supplements") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("My medicines & supplements") },
+                actions = {
+                    IconButton(onClick = onOpenSettings) { Icon(Icons.Filled.Settings, contentDescription = "Settings") }
+                },
+            )
+        },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onAdd,
@@ -87,7 +100,12 @@ fun ItemsScreen(
                     )
                 }
                 items(list, key = { it.id }) { item ->
-                    ItemCard(item, analysis, onClick = { onEdit(item.id) })
+                    ItemCard(
+                        item = item,
+                        analysis = analysis,
+                        lookingUp = lookupStatus[KnowledgeBase.normalize(item.name)] == LookupStatus.IN_PROGRESS,
+                        onClick = { onOpen(item.id) },
+                    )
                 }
             }
         }
@@ -146,7 +164,7 @@ private fun SummaryBanner(analysis: AnalysisResult, onOpenReview: () -> Unit) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ItemCard(item: RegimenItem, analysis: AnalysisResult, onClick: () -> Unit) {
+private fun ItemCard(item: RegimenItem, analysis: AnalysisResult, lookingUp: Boolean, onClick: () -> Unit) {
     val findings = analysis.findingsFor(item.id)
     val worst = findings.minByOrNull { it.severity.ordinal }?.severity
     val resolved = analysis.resolved.firstOrNull { it.item.id == item.id }
@@ -169,8 +187,10 @@ private fun ItemCard(item: RegimenItem, analysis: AnalysisResult, onClick: () ->
             }
             val recognisedText = when {
                 resolved == null -> null
+                resolved.identifiedOnline -> "Identified online as: " + resolved.substances.joinToString(", ") { it.displayName }
                 resolved.recognised -> "Recognised as: " + resolved.substances.joinToString(", ") { it.displayName }
-                else -> "Not in database - interactions can't be checked"
+                lookingUp -> "Looking up online…"
+                else -> "Not recognised - interactions can't be checked"
             }
             if (recognisedText != null) {
                 Text(recognisedText, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
