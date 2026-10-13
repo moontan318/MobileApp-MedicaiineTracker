@@ -50,7 +50,8 @@ class KnowledgeBase(
     }
 
     /** Advice entries that apply to any of the given tags. */
-    fun adviceFor(tags: Set<String>): List<SubstanceAdvice> = advice.filter { it.tags.any(tags::contains) }
+    fun adviceFor(tags: Set<String>): List<SubstanceAdvice> =
+        advice.filter { a -> a.tags.any(tags::contains) && tags.containsAll(a.requiresAll) }
 
     companion object {
         fun normalize(text: String): String =

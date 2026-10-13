@@ -151,6 +151,87 @@ internal val SUBSTANCE_ADVICE: List<SubstanceAdvice> = listOf(
         id = "liver_herb_note", tags = setOf("liver_herb"), severity = MINOR,
         reason = "Liver", generalNote = "This supplement has been linked to rare but serious liver injury. Stop it and seek advice if you develop yellow skin/eyes, dark urine or abdominal pain.",
     ),
+    // ---- Homeopathy ----
+    SubstanceAdvice(
+        id = "homeopathic_note", tags = setOf("homeopathic"), severity = INFO,
+        reason = "Homeopathy",
+        generalNote = "At usual potencies (e.g. 6C-30C) homeopathic remedies are diluted so far that little or none of the original " +
+            "substance remains, so no drug interactions are expected. The NHS advises there is no good-quality evidence that " +
+            "homeopathy works for any health condition - don't use it instead of prescribed medicines or vaccines.",
+    ),
+    SubstanceAdvice(
+        id = "homeopathic_low", tags = setOf("homeo_low"), severity = MINOR,
+        reason = "Low potency",
+        generalNote = "This is a low potency (mother tincture, 1X-6X or 1C-3C), which can still contain measurable amounts of the " +
+            "original substance. Tinctures may also contain alcohol.",
+    ),
+    SubstanceAdvice(
+        id = "homeopathic_low_toxic", tags = setOf("homeo_toxic_source"), requiresAll = setOf("homeo_low"), severity = MODERATE,
+        reason = "Toxic source",
+        generalNote = "This remedy is made from a poisonous source (e.g. nux vomica contains strychnine; belladonna, aconite and " +
+            "arsenicum are also toxic). At low potencies enough can remain to cause harm - use only as directed by a qualified " +
+            "practitioner, keep away from children, and tell your doctor or pharmacist.",
+    ),
+    SubstanceAdvice(
+        id = "arnica_oral", tags = setOf("h_arnica"), severity = INFO,
+        reason = "Arnica",
+        generalNote = "Arnica herb and undiluted tinctures are poisonous if swallowed - only homeopathic dilutions should be taken by " +
+            "mouth. Use arnica gels and creams on unbroken skin only.",
+    ),
+    SubstanceAdvice(
+        id = "bach_alcohol", tags = setOf("contains_alcohol"), severity = INFO,
+        reason = "Alcohol",
+        generalNote = "Most Bach flower remedies are preserved in brandy (about 27% alcohol). Alcohol-free versions are available " +
+            "if you avoid alcohol.",
+    ),
+
+    // ---- Herbal remedies ----
+    SubstanceAdvice(
+        id = "hawthorn_note", tags = setOf("hawthorn"), severity = INFO,
+        reason = "Hawthorn",
+        generalNote = "Hawthorn affects the heart and blood pressure. If you have a heart condition, discuss it with your doctor " +
+            "rather than using it to self-treat.",
+    ),
+    SubstanceAdvice(
+        id = "black_seed_note", tags = setOf("black_seed"), severity = INFO,
+        reason = "Black seed",
+        generalNote = "Black seed (Nigella sativa) may lower blood sugar and blood pressure and slightly slow blood clotting. " +
+            "Typical supplement amounts are 1-3 g of oil a day; stop it 2 weeks before surgery.",
+    ),
+    SubstanceAdvice(
+        id = "goldenseal_note", tags = setOf("goldenseal"), severity = MINOR,
+        reason = "Goldenseal",
+        generalNote = "Goldenseal blocks liver enzymes that break down many medicines, raising their levels. Check with a " +
+            "pharmacist before combining it with any prescribed medicine.",
+    ),
+    SubstanceAdvice(
+        id = "stimulant_herb_note", tags = setOf("raises_bp_herb"), severity = MINOR,
+        reason = "Stimulant",
+        generalNote = "Yohimbe and bitter orange are stimulants that can cause a fast heartbeat, anxiety and raised blood pressure. " +
+            "Avoid combining with caffeine or other stimulants.",
+    ),
+    SubstanceAdvice(
+        id = "kratom_note", tags = setOf("kratom"), severity = MODERATE,
+        reason = "Kratom",
+        generalNote = "Kratom acts on the same receptors as opioids and can cause dependence, withdrawal and, combined with " +
+            "other sedating substances, dangerous drowsiness. It is a controlled substance in some countries.",
+    ),
+    SubstanceAdvice(
+        id = "salicylate_herb_note", tags = setOf("salicylate_herb"), severity = MINOR,
+        reason = "Salicylates",
+        generalNote = "Willow bark and meadowsweet contain salicylates (related to aspirin). Avoid if you are allergic to aspirin " +
+            "or have had a stomach ulcer, and don't give to children under 16.",
+    ),
+    SubstanceAdvice(
+        id = "fibre_water", tags = setOf("fibre"), severity = INFO,
+        reason = "Fibre",
+        generalNote = "Take fibre supplements with a full glass of water, and not just before bed.",
+    ),
+    SubstanceAdvice(
+        id = "charcoal_note", tags = setOf("charcoal"), severity = INFO,
+        reason = "Charcoal",
+        generalNote = "Activated charcoal reduces absorption of almost all medicines and supplements taken near it.",
+    ),
     SubstanceAdvice(
         id = "kava_liver", tags = setOf("kava"), severity = MODERATE,
         reason = "Kava", generalNote = "Kava has been linked to serious liver damage and is restricted in several countries. Avoid alcohol and discuss with your doctor.",

@@ -58,7 +58,7 @@ internal val INTERACTIONS: List<InteractionRule> = listOf(
 
     // ---------- Warfarin specifics ----------
     InteractionRule(
-        id = "warfarin_vitk", sideA = set("vka"), sideB = set("vitamin_k", "multivitamin"), severity = MODERATE,
+        id = "warfarin_vitk", sideA = set("vka"), sideB = set("vitamin_k", "multivitamin", "vitamin_k_source"), severity = MODERATE,
         title = "Vitamin K affects warfarin",
         effect = "Vitamin K directly counteracts warfarin; changing intake can make your INR unstable.",
         advice = "Don't start or stop vitamin K-containing supplements without telling your anticoagulation clinic. Keep intake consistent day to day.",
@@ -84,7 +84,7 @@ internal val INTERACTIONS: List<InteractionRule> = listOf(
 
     // ---------- Serotonin syndrome ----------
     InteractionRule(
-        id = "serotonin_major", sideA = set("ssri"), sideB = set("st_johns_wort", "five_htp", "tramadol"), severity = MAJOR,
+        id = "serotonin_major", sideA = set("ssri"), sideB = set("st_johns_wort", "five_htp", "tryptophan", "same", "tramadol"), severity = MAJOR,
         title = "Risk of serotonin syndrome",
         effect = "Both increase serotonin. Symptoms of serotonin syndrome include agitation, sweating, shivering, fast heartbeat and muscle twitching.",
         advice = "Avoid this combination unless supervised by your prescriber. Seek urgent help if symptoms appear.",
@@ -489,6 +489,91 @@ internal val INTERACTIONS: List<InteractionRule> = listOf(
         title = "Risk of abnormal heart rhythm",
         effect = "Both medicines can prolong the QT interval on an ECG; together they increase the risk of a dangerous heart rhythm.",
         advice = "Check with your prescriber - an ECG may be advised. Report palpitations or fainting.",
+    ),
+
+    // ---------- Herbal remedies ----------
+    InteractionRule(
+        id = "herb_bp_lowering", sideA = set("bp_lowering_herb"), sideB = set("antihypertensive"), severity = MINOR,
+        title = "Extra blood pressure lowering",
+        effect = "This herb can lower blood pressure a little, adding to your blood pressure medicine.",
+        advice = "Usually fine, but watch for dizziness or light-headedness, especially when standing up. Check your blood pressure if you can.",
+    ),
+    InteractionRule(
+        id = "herb_raises_bp", sideA = set("raises_bp_herb"), sideB = set("antihypertensive"), severity = MODERATE,
+        title = "Herb may raise blood pressure",
+        effect = "Yohimbe and bitter orange are stimulants that can raise blood pressure and heart rate, opposing your blood pressure medicine.",
+        advice = "Best avoided with high blood pressure or heart disease - discuss with your doctor.",
+    ),
+    InteractionRule(
+        id = "hawthorn_digoxin", sideA = set("hawthorn"), sideB = set("digoxin"), severity = MODERATE,
+        title = "Hawthorn adds to digoxin's effects",
+        effect = "Hawthorn acts on the heart in a similar way to digoxin and may increase its effects.",
+        advice = "Only combine with your doctor's agreement; report nausea, visual changes or a slow or irregular pulse.",
+    ),
+    InteractionRule(
+        id = "hawthorn_vasodilators", sideA = set("cardiac_herb"), sideB = set("nitrate", "pde5"), severity = MODERATE,
+        title = "Increased risk of low blood pressure",
+        effect = "Hawthorn widens blood vessels and may add to the blood-pressure-lowering effect of nitrates and sildenafil/tadalafil.",
+        advice = "Discuss with your doctor before combining; sit or lie down if you feel faint.",
+    ),
+    InteractionRule(
+        id = "eleuthero_digoxin", sideA = set("siberian_ginseng"), sideB = set("digoxin"), severity = MINOR,
+        title = "May distort digoxin blood tests",
+        effect = "Siberian ginseng has been reported to give falsely high digoxin test results.",
+        advice = "Tell your doctor you take it before digoxin levels are checked.",
+    ),
+    InteractionRule(
+        id = "herb_lithium", sideA = set("herbal_diuretic"), sideB = set("lithium"), severity = MODERATE,
+        title = "Lithium levels may change",
+        effect = "Herbal 'water tablets' such as dandelion, nettle and juniper can alter how lithium is cleared, risking toxicity.",
+        advice = "Avoid unless your psychiatrist agrees; lithium levels may need checking.",
+    ),
+    InteractionRule(
+        id = "phytoestrogen_tamoxifen", sideA = set("phytoestrogen"), sideB = set("tamoxifen", "hormone_therapy"), severity = MODERATE,
+        title = "Plant oestrogens may interfere with hormone treatment",
+        effect = "Red clover, soy isoflavones, hops and similar herbs have oestrogen-like effects that may oppose tamoxifen or add to HRT.",
+        advice = "Avoid with tamoxifen or hormone-sensitive cancers unless your specialist agrees.",
+    ),
+    InteractionRule(
+        id = "agnus_hormones", sideA = set("agnus_castus"), sideB = set("hormonal_contraceptive", "hormone_therapy", "antipsychotic", "levodopa"),
+        severity = MINOR,
+        title = "Agnus castus affects hormones and dopamine",
+        effect = "Agnus castus acts on dopamine and female hormones and may interfere with this medicine.",
+        advice = "Tell your prescriber you take it.",
+    ),
+    InteractionRule(
+        id = "stimulant_laxative_k", sideA = set("stimulant_laxative", "laxative"), sideB = set("digoxin", "lowers_potassium"), severity = MINOR,
+        title = "Low potassium with long-term laxative use",
+        effect = "Regular use of stimulant laxatives (aloe, cascara, senna) can lower potassium, adding to diuretics and increasing digoxin side effects.",
+        advice = "Use for short periods only, and mention it at your next blood test.",
+    ),
+    InteractionRule(
+        id = "alcohol_metronidazole", sideA = set("contains_alcohol"), sideB = set("metronidazole"), severity = MINOR,
+        title = "Remedy contains alcohol",
+        effect = "Bach flower remedies are preserved in brandy; metronidazole reacts with alcohol.",
+        advice = "Avoid during the metronidazole course and for 48 hours afterwards, or ask for an alcohol-free version.",
+    ),
+    InteractionRule(
+        id = "sep_fibre", sideA = set("fibre"), sideB = set("thyroid", "digoxin", "lithium", "antiepileptic", "metformin"), severity = MINOR,
+        title = "Fibre supplement can reduce absorption",
+        effect = "Psyllium, glucomannan and ground flaxseed can bind medicines in the gut and reduce how much is absorbed.",
+        advice = "Take the medicine at least 2 hours before or after the fibre supplement.",
+        separationHours = 2.0,
+    ),
+    InteractionRule(
+        id = "sep_charcoal", sideA = set("charcoal"),
+        sideB = set("type_medicine", "type_vitamin", "type_mineral", "type_herbal", "type_other_supplement"), severity = MODERATE,
+        title = "Charcoal stops other products being absorbed",
+        effect = "Activated charcoal binds medicines and supplements in the gut, so much less is absorbed.",
+        advice = "Take other medicines at least 2 hours before or after charcoal. Don't use charcoal regularly while on prescribed medicines without advice.",
+        separationHours = 2.0,
+    ),
+    InteractionRule(
+        id = "sep_peppermint_acid", sideA = set("peppermint_oil"), sideB = set("antacid", "ppi", "h2_blocker"), severity = MINOR,
+        title = "Peppermint capsules may release too early",
+        effect = "Acid-reducing medicines can dissolve the coating of peppermint oil capsules early, causing heartburn.",
+        advice = "Take them at least 2 hours apart.",
+        separationHours = 2.0,
     ),
 
     // ---------- Beneficial combinations ----------

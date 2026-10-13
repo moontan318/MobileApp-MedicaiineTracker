@@ -8,6 +8,7 @@ import com.medtracker.app.data.OnlineInfoRepository
 import com.medtracker.app.data.RegimenRepository
 import com.medtracker.core.analysis.AnalysisResult
 import com.medtracker.core.analysis.RegimenAnalyzer
+import com.medtracker.core.knowledge.Homeopathy
 import com.medtracker.core.knowledge.KnowledgeBase
 import com.medtracker.core.model.RegimenItem
 import com.medtracker.core.online.OnlineDrugInfo
@@ -49,7 +50,10 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
     init {
         // Look up new or changed item names whenever the list changes (if enabled).
         viewModelScope.launch {
-            combine(repository.items, _onlineEnabled) { items, enabled -> if (enabled) items.map { it.name } else emptyList() }
+            combine(repository.items, _onlineEnabled) { items, enabled ->
+                // Homeopathic dilutions are analysed without label data, so they aren't looked up.
+                if (enabled) items.filter { Homeopathy.detect(it) == null }.map { it.name } else emptyList()
+            }
                 .collect { names -> if (names.isNotEmpty()) launch { onlineRepository.ensure(names) } }
         }
     }

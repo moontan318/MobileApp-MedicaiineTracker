@@ -1,6 +1,8 @@
 package com.medtracker.core.analysis
 
 import com.medtracker.core.knowledge.BaseUnit
+import com.medtracker.core.knowledge.Homeopathy
+import com.medtracker.core.model.ItemType
 import com.medtracker.core.knowledge.DoseLimit
 import com.medtracker.core.knowledge.KnowledgeBase
 import com.medtracker.core.knowledge.Severity
@@ -30,6 +32,8 @@ class RegimenAnalyzer(private val kb: KnowledgeBase = KnowledgeBase()) {
      */
     fun resolve(items: List<RegimenItem>, online: Map<String, OnlineDrugInfo> = emptyMap()): List<ResolvedItem> =
         items.map { item ->
+            val homeopathy = Homeopathy.detect(item)
+            if (homeopathy != null) return@map resolveHomeopathic(item, homeopathy)
             val info = online[KnowledgeBase.normalize(item.name)]?.takeIf { it.found }
             val builtIn = kb.identify(item.name)
             when {
@@ -41,6 +45,28 @@ class RegimenAnalyzer(private val kb: KnowledgeBase = KnowledgeBase()) {
                 }
             }
         }
+
+    /**
+     * Homeopathic dilutions don't carry the pharmacology of their source, so a herb or medicine
+     * named in a homeopathic product (e.g. "Hypericum 30C") is replaced by a neutral homeopathic
+     * variant. Online label data is ignored for the same reason.
+     */
+    private fun resolveHomeopathic(item: RegimenItem, info: Homeopathy.Info): ResolvedItem {
+        val matched = kb.identify(item.name).map { s ->
+            if ("homeopathic" in s.tags) s
+            else Substance(
+                id = "homeo:${s.id}",
+                displayName = "${s.displayName.substringBefore(" (")} (homeopathic)",
+                defaultType = ItemType.HOMEOPATHIC,
+                aliases = s.aliases,
+                tags = setOf("homeopathic"),
+            )
+        }
+        val substances = matched.ifEmpty {
+            listOf(Substance("homeo:generic:${item.id}", "Homeopathic remedy", ItemType.HOMEOPATHIC, emptyList(), setOf("homeopathic")))
+        }
+        return ResolvedItem(item, substances, online = null, homeopathy = info)
+    }
 
     private fun onlineSubstance(item: RegimenItem, info: OnlineDrugInfo): Substance {
         val generic = info.genericName ?: item.name
@@ -204,7 +230,7 @@ class RegimenAnalyzer(private val kb: KnowledgeBase = KnowledgeBase()) {
 
     private fun duplicateFindings(resolved: List<ResolvedItem>): List<Finding> {
         val substancesById = resolved.flatMap { it.substances }.associateBy { it.id }
-        val bySubstance = resolved.flatMap { r -> r.substances.map { it to r } }
+        val bySubstance = resolved.flatMap { r -> r.substances.filter { "homeopathic" !in it.tags }.map { it to r } }
             .groupBy({ it.first.id }, { it.second })
         return bySubstance.filter { it.value.size > 1 }.map { (substanceId, items) ->
             val substance = substancesById.getValue(substanceId)

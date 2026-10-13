@@ -1,5 +1,6 @@
 package com.medtracker.core.analysis
 
+import com.medtracker.core.knowledge.Homeopathy
 import com.medtracker.core.knowledge.Severity
 import com.medtracker.core.knowledge.Substance
 import com.medtracker.core.model.DoseTime
@@ -45,8 +46,16 @@ data class ResolvedItem(
     val substances: List<Substance>,
     val online: OnlineDrugInfo? = null,
     val identifiedOnline: Boolean = false,
+    /** Set when the item is a homeopathic preparation. */
+    val homeopathy: Homeopathy.Info? = null,
 ) {
-    val tags: Set<String> = substances.flatMap { it.allTags }.toSet()
+    /**
+     * Substance tags plus "type_<item type>" (so rules can target e.g. every medicine) and, for
+     * low-potency homeopathic remedies, "homeo_low".
+     */
+    val tags: Set<String> = substances.flatMap { it.allTags }.toSet() +
+        ("type_" + item.type.name.lowercase()) +
+        (if (homeopathy?.lowPotency == true) setOf("homeo_low") else emptySet())
     val recognised: Boolean get() = substances.isNotEmpty()
 }
 

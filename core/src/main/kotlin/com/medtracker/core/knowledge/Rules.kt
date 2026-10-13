@@ -63,6 +63,8 @@ data class SubstanceAdvice(
     val food: FoodRelation? = null,
     /** A general note shown whenever the substance is present, independent of timing/food. */
     val generalNote: String? = null,
+    /** Extra tags that must all be present for this advice to apply (in addition to one of [tags]). */
+    val requiresAll: Set<String> = emptySet(),
 )
 
 /** Mass/IU unit used as the base for a dose limit. */

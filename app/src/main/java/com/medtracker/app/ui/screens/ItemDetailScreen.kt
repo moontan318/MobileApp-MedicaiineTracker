@@ -102,6 +102,9 @@ fun ItemDetailScreen(
                         if (item.food != FoodRelation.ANY) Text(item.food.label)
                         if (item.notes.isNotBlank()) Text(item.notes, style = MaterialTheme.typography.bodySmall)
                         val identified = when {
+                            resolved?.homeopathy != null -> "Homeopathic remedy" +
+                                (resolved.homeopathy?.potency?.let { " · potency $it" } ?: "") +
+                                (if (resolved.homeopathy?.lowPotency == true) " (low potency)" else "")
                             resolved == null || !resolved.recognised -> "Not recognised"
                             resolved.identifiedOnline -> "Identified online as " + resolved.substances.joinToString(", ") { it.displayName }
                             else -> "Recognised (built-in database) as " + resolved.substances.joinToString(", ") { it.displayName }
@@ -118,9 +121,11 @@ fun ItemDetailScreen(
             }
 
             // ---- Online information ----
-            item { Header("Online drug information") }
-            item {
-                OnlineSection(onlineInfo, lookupStatus, onlineEnabled, onRefresh, onOpen = open)
+            if (resolved?.homeopathy == null) {
+                item { Header("Online drug information") }
+                item {
+                    OnlineSection(onlineInfo, lookupStatus, onlineEnabled, onRefresh, onOpen = open)
+                }
             }
 
             // ---- Reference links ----

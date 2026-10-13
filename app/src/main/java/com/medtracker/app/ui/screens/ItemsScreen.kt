@@ -117,6 +117,7 @@ private fun pluralLabel(type: ItemType) = when (type) {
     ItemType.VITAMIN -> "Vitamins"
     ItemType.MINERAL -> "Minerals"
     ItemType.HERBAL -> "Herbal supplements"
+    ItemType.HOMEOPATHIC -> "Homeopathic remedies"
     ItemType.OTHER_SUPPLEMENT -> "Other supplements"
 }
 
@@ -187,6 +188,8 @@ private fun ItemCard(item: RegimenItem, analysis: AnalysisResult, lookingUp: Boo
             }
             val recognisedText = when {
                 resolved == null -> null
+                resolved.homeopathy != null -> "Homeopathic: " + resolved.substances.joinToString(", ") { it.displayName.removeSuffix(" (homeopathic)") } +
+                    (resolved.homeopathy?.potency?.let { " $it" } ?: "")
                 resolved.identifiedOnline -> "Identified online as: " + resolved.substances.joinToString(", ") { it.displayName }
                 resolved.recognised -> "Recognised as: " + resolved.substances.joinToString(", ") { it.displayName }
                 lookingUp -> "Looking up online…"

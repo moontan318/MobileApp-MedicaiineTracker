@@ -6,6 +6,7 @@ enum class ItemType(val label: String) {
     VITAMIN("Vitamin"),
     MINERAL("Mineral"),
     HERBAL("Herbal"),
+    HOMEOPATHIC("Homeopathic"),
     OTHER_SUPPLEMENT("Other supplement"),
 }
 

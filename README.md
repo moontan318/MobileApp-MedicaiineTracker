@@ -14,10 +14,12 @@ It then proposes a **revised daily schedule** that separates clashing products a
 
 | Source | Used for |
 |---|---|
-| **Built-in database** (~220 common UK medicines, vitamins, minerals and herbal supplements, 80+ interaction rules) | Interactions, timing/food advice, dose limits - works offline |
+| **Built-in database** (~340 products: common UK medicines, vitamins, minerals, ~110 herbal remedies and supplements, ~45 homeopathic remedies; 95+ interaction rules) | Interactions, timing/food advice, dose limits - works offline |
 | **[openFDA drug labels](https://open.fda.gov/apis/drug/label/)** (US FDA) | Identifies medicines not in the built-in database; their drug class is fed into the built-in rules, and the label's *interactions*, *contraindications* and *warnings* sections are checked against your other items |
 | **[RxNorm](https://lhncbc.nlm.nih.gov/RxNav/)** (US National Library of Medicine) | Corrects misspellings and resolves brand names to ingredients |
 | **BNF / NHS** | Linked from each item's page. The BNF is licensed by NICE and has no public API, so the app links to it rather than copying its content |
+
+**Homeopathic remedies** are recognised by name, by a potency in the name (e.g. `30C`, `6X`, `200CH`, `1M`, "mother tincture") or by choosing the *Homeopathic* type. At usual potencies they are treated as having no drug interactions - so "Hypericum 30C" does not trigger St John's wort warnings - while low potencies (≤6X / ≤3C / mother tinctures) of toxic sources such as nux vomica, belladonna or aconite get a warning.
 
 Online lookup sends **only the medicine name** and can be switched off in Settings (⚙ on *My list*). Results are cached on the device for 30 days. UK names are translated to US names for lookup (e.g. paracetamol → acetaminophen).
 

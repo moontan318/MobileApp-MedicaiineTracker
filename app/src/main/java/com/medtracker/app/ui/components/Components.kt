@@ -151,7 +151,7 @@ fun SettingsDialog(
                 )
                 Text("Data sources", fontWeight = FontWeight.SemiBold)
                 Text(
-                    "• Built-in database: ~220 common UK medicines and supplements with interaction, timing and dose rules.\n" +
+                    "• Built-in database: ~340 medicines, vitamins, minerals, herbal and homeopathic remedies with interaction, timing and dose rules.\n" +
                         "• openFDA: official US prescribing information (drug class, interactions, contraindications, dosing).\n" +
                         "• RxNorm: corrects misspellings and brand names.\n" +
                         "• BNF and NHS: linked from each item - the BNF has no public data feed.",
